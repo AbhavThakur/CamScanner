@@ -12,6 +12,7 @@ import Settings from '../screens/Settings';
 import Camera from '../screens/Camera';
 import CameraView from '../screens/CameraView';
 import Addimage from '../screens/Addimage';
+import ShowImage from '../screens/ShowImage';
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -83,6 +84,11 @@ const MainStack = ({navigation}) => (
       name="AddImage"
       component={Addimage}
       options={{headerShown: true}}
+    />
+    <Stack.Screen
+      name="ShowImage"
+      component={ShowImage}
+      options={{headerShown: false}}
     />
   </Stack.Navigator>
 );

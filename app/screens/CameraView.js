@@ -1,9 +1,16 @@
 import React, {useEffect, useState} from 'react';
 
-import {View, Text, TouchableOpacity, Image, ScrollView} from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Image,
+  ScrollView,
+  Dimensions,
+} from 'react-native';
 
 import CameraRoll from '@react-native-community/cameraroll';
-const CameraView = () => {
+const CameraView = ({navigation}) => {
   const [albumList, setAlbumList] = useState([]);
   const [imageList, setImageList] = useState([]);
 
@@ -33,13 +40,14 @@ const CameraView = () => {
 
   return (
     <>
-      <View
-        style={{
+      <ScrollView
+        contentContainerStyle={{
           padding: 20,
           alignItems: 'center',
           justifyContent: 'center',
-          flex: 1,
+          backgroundColor: '#fff',
         }}>
+        <Text style={{marginBottom: 10}}>Select the Album you want to see</Text>
         {albumList.map((item, index) => {
           return (
             <TouchableOpacity
@@ -47,33 +55,50 @@ const CameraView = () => {
               onPress={() => {
                 getPhotosByAlbum(item.title);
               }}
-              style={{marginBottom: 10}}>
-              <Text>
-                Album Name : {item.title} - Number of Photos : {item.count}
-              </Text>
+              style={{
+                marginBottom: 10,
+                borderWidth: 0.5,
+                width: Dimensions.get('window').width * 0.95,
+                padding: 5,
+                flexDirection: 'row',
+              }}>
+              <Text>Album Name : </Text>
+              <Text style={{color: 'red'}}>{item.title}</Text>
+              <Text> Number of Photos : </Text>
+              <Text style={{color: 'red'}}>{item.count}</Text>
             </TouchableOpacity>
           );
         })}
-      </View>
-      <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+      </ScrollView>
+      <View
+        style={{
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: '#fff',
+        }}>
         <ScrollView horizontal={true}>
           {imageList.length > 0 &&
             imageList.map((item, index) => {
               return (
-                <View
+                <TouchableOpacity
+                  onPress={() =>
+                    navigation.navigate('ShowImage', {
+                      url: item,
+                    })
+                  }
                   key={index}
                   style={{
                     marginBottom: 20,
                     borderWidth: 1,
-                    width: 200,
-                    height: 200,
-                    marginEnd: 10,
+                    width: 400,
+                    height: 300,
+                    marginHorizontal: 8,
                   }}>
                   <Image
                     style={{width: '100%', height: '100%'}}
                     source={{uri: item}}
                   />
-                </View>
+                </TouchableOpacity>
               );
             })}
         </ScrollView>

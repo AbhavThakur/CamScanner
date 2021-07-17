@@ -181,7 +181,7 @@ function Home({navigation}) {
             onDismiss={hideModal}
             contentContainerStyle={containerStyle}>
             <Text style={{color: '#000'}}>
-              Example Modal. Click outside this area to dismiss.
+              Latest features coming soon 🔜🔜🔜
             </Text>
           </Modal>
         </Portal>
