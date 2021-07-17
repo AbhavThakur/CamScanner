@@ -89,6 +89,12 @@ function Home({navigation}) {
           </TouchableOpacity>
         )}
       />
+      <TouchableOpacity onPress={() => navigation.navigate('Camera')}>
+        <Image source={require('../assets/camera.png')} />
+      </TouchableOpacity>
+      <TouchableOpacity onPress={() => navigation.navigate('CameraView')}>
+        <Image source={require('../assets/pic.png')} />
+      </TouchableOpacity>
       <Provider>
         <Portal>
           <FAB.Group

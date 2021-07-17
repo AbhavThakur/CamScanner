@@ -9,6 +9,8 @@ import Home from '../screens/Home';
 import DrawerContent from './DrawerContent';
 import Profile from '../screens/Profile';
 import Settings from '../screens/Settings';
+import Camera from '../screens/Camera';
+import CameraView from '../screens/CameraView';
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -64,6 +66,16 @@ const MainStack = ({navigation}) => (
     <Stack.Screen
       name="Settings"
       component={Settings}
+      options={{headerShown: true}}
+    />
+    <Stack.Screen
+      name="Camera"
+      component={Camera}
+      options={{headerShown: true}}
+    />
+    <Stack.Screen
+      name="CameraView"
+      component={CameraView}
       options={{headerShown: true}}
     />
   </Stack.Navigator>
