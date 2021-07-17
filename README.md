@@ -4,7 +4,7 @@
 #### Step : 1
 ##### Clone the Github repo into your system.
 #### Step : 2
-##### Open the folder in any code editor(vscode) and type :- npm install  [to upload all the packages]
+##### Open the folder in any code editor(vscode) and type :- ### npm install
 #### Step : 3
 ##### run the command :- npx react-native run-android
 
