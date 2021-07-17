@@ -9,6 +9,8 @@ import {
   TextInput,
   Pressable,
   KeyboardAvoidingView,
+  ScrollView,
+  Alert,
 } from 'react-native';
 import ImagePicker from 'react-native-image-crop-picker';
 import {
@@ -23,10 +25,13 @@ import {
 } from 'react-native-paper';
 import CameraRoll from '@react-native-community/cameraroll';
 import Modal from 'react-native-modal';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as yup from 'yup';
+import {Formik} from 'formik';
 
-function Camera(props) {
+function Camera({navigation}) {
   const [image, setImage] = useState(null);
-  const [txt, settxt] = useState('');
+
   const [isModalVisible, setModalVisible] = useState(false);
 
   const toggleModal = () => {
@@ -50,67 +55,126 @@ function Camera(props) {
     });
   };
 
-  const savePhoto = () => {
+  const savePhoto = async db => {
     const uri = image;
 
     const filename = uri.substring(uri.lastIndexOf('/') + 1);
     const uploadUri = Platform.OS === 'ios' ? uri.replace('file:///', '') : uri;
     console.log('filename', filename);
     console.log('uploadUri', uploadUri);
-
-    CameraRoll.save(image, {type: 'photo', album: txt})
-      .then(() => alert('Document Saved in gallery'))
+    await AsyncStorage.setItem('filename', db.name);
+    CameraRoll.save(image, {type: 'photo', album: db.name})
+      .then(() => upload(db))
       .catch(err => alert('Image not save', err));
   };
+
+  const upload = val => {
+    //function to make two option alert
+    Alert.alert(
+      //title
+      'Successfully Added to Gallery',
+      //body
+      'Do you want to add more images to folder',
+      [
+        {
+          text: 'Yes',
+          onPress: () => navigation.replace('AddImage', val.name),
+        },
+        {
+          text: 'Go Home',
+          onPress: () => navigation.navigate('Home'),
+          style: 'cancel',
+        },
+      ],
+      {cancelable: false},
+      //clicking out side of alert will not cancel
+    );
+  };
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
+      <Title>Step 1: Open Camera</Title>
       <Button style={styles.btn} mode="contained" onPress={takePhotoFromCamera}>
         Open camera
       </Button>
       {image === null ? null : (
-        <Image source={{uri: image}} style={{width: '100%', height: '70%'}} />
+        <Image source={{uri: image}} style={{width: '100%', height: '75%'}} />
+      )}
+      {image === null ? null : (
+        <Button style={styles.btn} mode="contained" onPress={toggleModal}>
+          Save Document
+        </Button>
       )}
 
-      <Button style={styles.btn} mode="contained" onPress={toggleModal}>
-        Save Document
-      </Button>
       <Modal isVisible={isModalVisible}>
         <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            <Text style={styles.modalText}>Save Document in Gallery</Text>
-            <TextInput
-              placeholder="Enter the file name"
-              value={txt}
-              onChangeText={text => settxt(text)}
-            />
-            <View style={{flexDirection: 'row', alignItems: 'center'}}>
-              <View style={{flex: 1, height: 1, backgroundColor: '#ccc'}} />
-            </View>
-            <Text>{txt}</Text>
-
-            <Pressable
-              style={[
-                styles.button,
-                {backgroundColor: '#2196F3', width: '70%', marginTop: 10},
-              ]}
-              onPress={savePhoto}>
-              <Text style={styles.textStyle}>Save Document in Gallery</Text>
-            </Pressable>
-            <Pressable
-              style={[styles.button, styles.buttonClose]}
-              onPress={toggleModal}>
-              <Text style={styles.textStyle}>close </Text>
-            </Pressable>
-          </View>
+          <Formik
+            initialValues={{
+              name: '',
+            }}
+            onSubmit={values => savePhoto(values)}
+            validationSchema={yup.object().shape({
+              name: yup
+                .string()
+                .min(4)
+                .required('Please provide the name of folder'),
+            })}>
+            {({
+              values,
+              handleChange,
+              errors,
+              setFieldTouched,
+              touched,
+              isValid,
+              handleSubmit,
+            }) => (
+              <View style={styles.modalView}>
+                <Text style={styles.modalText}>Save Document in Gallery</Text>
+                <TextInput
+                  placeholder="Enter the folder name"
+                  placeholderTextColor="#ccc"
+                  value={values.name}
+                  onChangeText={handleChange('name')}
+                  onBlur={() => setFieldTouched('name')}
+                  style={{color: '#000'}}
+                />
+                <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                  <View style={{flex: 1, height: 1, backgroundColor: '#ccc'}} />
+                </View>
+                {touched.name && errors.name && (
+                  <Text style={{fontSize: 12, color: '#FF0D10'}}>
+                    {errors.name}
+                  </Text>
+                )}
+                <Button
+                  style={[
+                    styles.button,
+                    {backgroundColor: '#2196F3', width: '70%', marginTop: 10},
+                  ]}
+                  mode="contained"
+                  disabled={!isValid}
+                  onPress={handleSubmit}>
+                  Save Document
+                </Button>
+                <Pressable
+                  style={[styles.button, styles.buttonClose]}
+                  onPress={toggleModal}>
+                  <Text style={styles.textStyle}>close </Text>
+                </Pressable>
+              </View>
+            )}
+          </Formik>
         </View>
       </Modal>
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
+    backgroundColor: '#fff',
+    padding: 10,
+    paddingBottom: 50,
   },
   centeredView: {
     flex: 1,
@@ -163,6 +227,7 @@ const styles = StyleSheet.create({
   btn: {
     marginVertical: 20,
     width: 200,
+    alignSelf: 'center',
   },
 });
 

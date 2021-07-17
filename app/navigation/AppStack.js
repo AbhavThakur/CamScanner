@@ -11,6 +11,7 @@ import Profile from '../screens/Profile';
 import Settings from '../screens/Settings';
 import Camera from '../screens/Camera';
 import CameraView from '../screens/CameraView';
+import Addimage from '../screens/Addimage';
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -76,6 +77,11 @@ const MainStack = ({navigation}) => (
     <Stack.Screen
       name="CameraView"
       component={CameraView}
+      options={{headerShown: true}}
+    />
+    <Stack.Screen
+      name="AddImage"
+      component={Addimage}
       options={{headerShown: true}}
     />
   </Stack.Navigator>
